@@ -1,3 +1,14 @@
+////////////////////////////////////////
+//          OPEN FLIGHT DATA          //
+//       by Luis Briones, 2015        //
+//             and others             //
+//          Open Source Code          //
+//   See Open Source Licence after    //
+////////////////////////////////////////
+
+//Arduino Vario Project found in:
+//http://www.instructables.com/id/GoFly-paraglidinghanglidinggliding-altimeter-v/?ALLSTEPS
+
 /*
 Arduino Vario by Jaros, 2012 (dedicated to atmega328 based arduinos)
 Part of the "GoFly" project
@@ -52,12 +63,13 @@ LX Protocol
 http://git.xcsoar.org/cgit/master/xcsoar.git/tree/src/Device/Driver/LX/Parser.cpp
 http://max.kellermann.name/download/xcsoar/devel/lxnav/V7%20dataport%20specification%202.01.pdf
 
+*/
+
 ////////////////////////////////////////
 //   Modified by Luis Briones, 2015   //
-//   Still Open Source!!! ;-)         //
-//   See Open Source Licence before   //
 ////////////////////////////////////////
 
+/*
 $POV protocol
 https://github.com/Turbo87/openvario-protocol
 Formato:
@@ -95,9 +107,8 @@ $POV,P,1018.35,T,23.52,E,2.15*<checksum>
 */
 
 #include <Wire.h>                      //i2c library
-//#include <BMP085.h>                    //bmp085 library, download from url link (1)
-//#include <Tone.h>                    //tone library, download from url link (3)
-#include <Adafruit_BMP085.h>
+#include <Tone.h>                      //tone library, download from url link (3)
+#include <Adafruit_BMP085.h>           //https://github.com/adafruit/Adafruit-BMP085-Library
 #include <stdlib.h>                    //we need that to use dtostrf() and convert float to string
 /////////////////////////////////////////
 ///////////////////////////////////////// variables that You can test and try
@@ -109,10 +120,11 @@ float vario_sink_rate_start = -1.1;    //maximum sink beeping value (ex. start s
 #define UART_SPEED 9600                //define serial transmision speed (9600,19200, etc...)
 /////////////////////////////////////////
 /////////////////////////////////////////
-Adafruit_BMP085 bmp085;//            //set up bmp085 sensor
+Adafruit_BMP085 bmp085;                //set up bmp085 sensor
 Tone     tone_out1;
 Tone     tone_out2;
 long     Pressure = 101325;
+long     dynamic_pressure = 0;
 float    Temperature = 0;
 float    Altitude;
 int      Battery_Vcc = 0;              //variable to hold the value of Vcc from battery
@@ -126,6 +138,7 @@ char     average_pressure_arr[6];    //wee need this array to translate float to
 char     my_temperature_arr[5];      //wee need this array to translate float to string
 char     altitude_arr[6];            //wee need this array to translate float to string
 char     vario_arr[5];               //wee need this array to translate float to string
+char     dynamic_pressurel_arr[6];   //wee need this array to translate float to string
 char     total_arr[6];
 int      samples=40;
 int      maxsamples=50;
@@ -262,8 +275,8 @@ if (millis() >= (get_time3+333))       //every 1/3 second send NMEA output over 
     String str_out =                                                                                  //combine all values and create part of NMEA data string output
       String("POV,")
       +String("P,")+String(dtostrf((float)average_pressure/100,0,2,average_pressure_arr))+String(",") // Static Pressure
-      //+String("R,")+String(dtostrf(presionTotal,0,2,total_arr))+String(",") // Total Pressure in hPa
-      //+String("A,")+String(dtostrf(Altitude,0,2,altitude_arr))+String(",")                           // Altitude, not in $POV protocol yet
+      +String("Q,")+String(dtostrf(dynamic_pressure,0,2,dynamic_pressurel_arr))+String(",")           // Total Pressure in hPa
+      //+String("A,")+String(dtostrf(Altitude,0,2,altitude_arr))+String(",")                          // Altitude, not in $POV protocol yet
       +String("E,")+String(dtostrf((vario),0,2,vario_arr))+String(",")                                // Vario
       +String("T,")+String(dtostrf((my_temperature),0,2,my_temperature_arr))+String(",")              // Temperaure
       
