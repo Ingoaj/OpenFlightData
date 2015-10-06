@@ -306,13 +306,13 @@ Serial.print(vario);
     Serial.print(str_out);                 // print data string
     Serial.print("*");                     //end of protocol string
     Serial.println(checksum_end,HEX);      //print calculated checksum on the end of the string in HEX
-  */
-    //creating now NMEA serial output for XCSOAR. $POV protocol format:
+*/
+ //creating now NMEA serial output for XCSOAR. $POV protocol format:
 /*    Serial.print("$");                     //print first sign of NMEA protocol
     Serial.print(str_out);                 // print data string
     Serial.print("*");                     //end of protocol string
     Serial.println(checksum_end,HEX);      //print calculated checksum on the end of the string in HEX
-
+*/
 /*Serial.println("");
 
     Serial.print("Temperatura = ");
